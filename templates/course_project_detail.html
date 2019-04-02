@@ -1,0 +1,137 @@
+{% extends 'course_base.html' %}
+{% load staticfiles %}
+{% block website_title %}{{ course.name }}-專題-{{ now_homework.name }}{% endblock %}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        <ol class="breadcrumb">
+            <li><a href="{% url 'courses:project' %}?id={{ course.id }}">專題</a></li>
+            <li class="active">{{ now_homework.name }}</li>
+        </ol>
+        <div class="container-fluid" style="padding: 10px;">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a data-toggle="tab" href="#homework_detail">專題資訊</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#list">已交名單</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#my">
+                    {% if user.extraprofile.identify == 'student' %}
+                        {% if HwIsSubmit %}
+                            我的專題
+                        {% else %}
+                            上傳
+                        {% endif %}
+                    {% elif user.extraprofile.identify == 'teacher' %}
+                        未交名單
+                    {% endif %}
+                </a></li>
+            </ul>
+            <div class="tab-content" style="padding: 10px;">
+                <div id="homework_detail" class="tab-pane fade in active">
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            <th width="20%">專題名稱</th>
+                            <td>{{ now_homework.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>描述</th>
+                            <td>{{ now_homework.desc }}</td>
+                        </tr>
+                        <tr>
+                            <th>詳細資訊</th>
+                            <td>{{ now_homework.detail }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="list" class="tab-pane fade">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>學號</th>
+                                <th>繳交時間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for studentHomework in now_studentHomework %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>
+                                        {% if user.extraprofile.identify == 'teacher' %}
+                                            <a href="{{ MEDIA_URL }}{{ studentHomework.file }}">{{ studentHomework.user }}</a>
+                                        {% else %}
+                                            {{ studentHomework.user }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ studentHomework.add_time }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="my" class="tab-pane fade">
+                    <div class="container-fluid">
+                        <div class="row">
+                            {% if HwIsSubmit %}
+                                {% for hw in my_hw %}
+                                    {{ hw.filename }}&nbsp;<a href="{% url 'courses:student_hw_delete' %}" onclick="return confirm('確認刪除?');"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                                {% endfor %}
+                            {% else %}
+                                {% if now_homework.deadline_token == '0' and user.extraprofile.identify == 'student' %}
+                                    <form class="form-horizontal" role="form" enctype="multipart/form-data" action="{% url 'courses:student_hw_upload' %}?id={{ course.id }}&h_id={{ now_homework.id }}" method="post">
+                                        <div class="form-group">
+                                            <div class="col-md-1">
+                                                <label class="control-label" for="filebutton">檔案</label>
+                                            </div>
+                                            <input type="file" id="uploadBtn" style="display: none;" name="file"/>
+                                            <div class="col-md-6">
+                                                <input id="uploadFile" placeholder="Choose File" disabled="disabled" class="form-control"/>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="button" value="選擇檔案" onclick="document.getElementById('uploadBtn').click();" class="form-control pure-button pure-button-primary"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="controls">
+                                                <button type="submit" class="pure-button">提交</button>
+                                            </div>
+                                        </div>
+                                    {% csrf_token %}
+                                    </form>
+                                {% else %}
+                                    {% if user.extraprofile.identify == 'student' %}
+                                        <span style="color: red;">繳交期限已到，禁止繳交</span>
+                                    {% elif user.extraprofile.identify == 'teacher' %}
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>學號</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for person in theStudentNotSubmit %}
+                                                    <tr>
+                                                        <th scope="row">{{ forloop.counter }}</th>
+                                                        <td>
+                                                            {{ person }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %} 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+{% block js_source %}
+    <script type="text/javascript" src="{% static 'js/upload_file.js' %}"></script>
+{% endblock %}

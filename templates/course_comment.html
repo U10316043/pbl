@@ -1,0 +1,490 @@
+{% extends 'course_base.html' %}
+{% load staticfiles %}
+{% block website_title %}{{ course.name }}-提問及討論{% endblock %}
+{% block css_source %}
+    <link rel="stylesheet" href="{% static 'css/course_comment.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/page.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/comment_box.css' %}" type="text/css" />
+{% endblock %}
+{% block content %}
+<div class="modal fade" id="myModalHorizontal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    <span class="glyphicon glyphicon-edit"></span>&nbsp;新增留言或討論
+                </h4>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="commentLocation" ><span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="color:red"></span>&nbsp;位置</label>
+                        <div class="col-md-10">
+                            <div id="myLocation"><label class="control-label">Loading...</label></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="commentName"><span class="glyphicon glyphicon-user" aria-hidden="true" style="color:#33CCFF"></span>&nbsp;用戶</label>
+                        <div class="col-md-10">
+                            <label class="control-label">{{ user.extraprofile.name }}</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="commentName"><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="color:gray"></span>&nbsp;內容</label>
+                        <div class="col-md-10">
+                            <div class="panel-body" style="display:none;" id="preview"><img id="uploadimg" class="img-responsive thumb img-thumbnail" style="width:30%;height:30%;"></div>
+			    <div class="panel-body" style="display:none;" id="preview2"><video id="uploadvideo" class="img-responsive thumb img-thumbnail" style="width:30%;height:30%;"></div>
+    						<div class="status-upload">
+								<textarea class="form-control" placeholder="輸入問題或討論" id="commentDetail"></textarea>
+								<ul>
+									<li><a title="" type="button" data-placement="bottom" id="srBtn"><i class="fa fa-microphone"></i></a></li>
+									<input id="upload" type="file" style="display:none;"/>
+									<li><a title="" type="button" data-placement="bottom" id="upload_link"><i class="fa fa-picture-o"></i></a></li>
+									<input id="upload2" type="file" style="display:none;"/>
+									<li><a title="" type="button" data-placement="bottom" id="upload_video"><i class="fa fa-video-camera"></i></a></li>
+								</ul>
+							</div>
+							<button type="button" class="pure-button pure-button-primary" style="display:none;" id="p"><i class="fa fa-play">&nbsp;開始錄音</i></button>
+							<button type="button" class="pure-button pure-button-primary" style="display:none;" disabled="true" id="s"><i class="fa fa-stop">&nbsp;停止錄音</i></button>
+                            <div id="recordingslist"></div>
+                        </div>
+					</div>
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="pure-button" data-dismiss="modal">
+                            返回
+                        </button>
+                        <button type="button" class="pure-button pure-button-primary" onclick="submitComment();">
+                            送出
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <button class="pure-button pure-button-primary" data-toggle="modal" data-target="#myModalHorizontal" id="addComment"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;新增留言或討論</button>
+        <div class="comment-padding"></div>
+            {% for comment in comment_list.object_list %}
+            <div class="container-fluid">
+                <div class="row">
+            		<div class="modal fade" id="myModalHorizontal{{ comment.id }}" tabindex="-2" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <span aria-hidden="true">&times;</span>
+                                        <span class="sr-only">Close</span>
+                                    </button>
+                                    <h4 class="modal-title" id="myModalLabel">
+                                        回覆{{ comment.user.name }}
+                                    </h4>
+                                </div>
+                                <!-- Modal Body -->
+                                <div class="modal-body">
+                                    <form class="form-horizontal" role="form" enctype="multipart/form-data" action="{% url 'operation:reply_comment' %}?id={{ course.id }}&comment_id={{ comment.id }}" method="post">
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" for="replyName"><span class="glyphicon glyphicon-user" aria-hidden="true" style="color:#33CCFF"></span>&nbsp;回覆者</label>
+                                            <div class="col-md-10">
+                                                <label class="control-label">{{ user.extraprofile.name }}</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-2 control-label" for="replyDetail" ><span class="glyphicon glyphicon-pencil" aria-hidden="true" style="color:gray"></span>&nbsp;內容</label>
+                                            <div class="col-md-10">
+                                                <textarea class="form-control" name="replyDetail" id="replyDetail" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <!-- Modal Footer -->
+                                        <div class="modal-footer">
+                                            <button type="button" class="pure-button" data-dismiss="modal">
+                                                返回
+                                            </button>
+                                            <button type="submit" class="pure-button pure-button-primary">
+                                                送出
+                                            </button>
+                                        </div>
+                                    {% csrf_token %}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                            <div class="panel panel-white post">
+                                <div class="post-heading">
+                                    <div class="pull-left image">
+                                        <img src="{{ MEDIA_URL }}{{ comment.user.image }}" width="60" height="60" class="img-circle avatar" alt="">
+                                    </div>
+                                    <div class="pull-left meta">
+                                        <div class="title h5">
+                                            <a href="#"><b>{{ comment.user.name }}</b></a>
+                                            made a post.
+                                        </div>
+                                        <h6 class="text-muted time">{{ comment.add_time }}</h6>
+                                    </div>
+                                    <div class="pull-right meta">
+                                        <span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="color:red"></span>&nbsp;<span style="color:green">{{ comment.location }}</span>
+                                        {% if user.extraprofile.identify == 'teacher' or user.id == comment.user_id %}
+                                            <a href="/operation/delete_comment/?comment_id={{ comment.id }}" onclick="return confirm('確認刪除?');"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="post-description"> 
+                                    <p>{{ comment.comment }}</p>
+                                    {% if comment.picture != None %}
+                                        <p><img style="width:100%;max-width:300px;height:auto;overflow:hidden;" src="{{ MEDIA_URL }}{{ comment.picture }}" class="img-thumbnail"></img></p>
+                                    {% endif %}
+                                    {% if comment.sound != None %}
+                                        <p><audio src="{{ MEDIA_URL }}{{ comment.sound }}" style="width:100%;max-width:300px;" controls></audio></p>
+                                    {% endif %}
+				    {% if comment.video != None %}
+					<p><video style="width:100%;max-width:300px;" controls><source src="{{ MEDIA_URL }}{{ comment.video }}" type="video/mp4"></video></p>
+				    {% endif %}
+                                    <button class="pure-button pure-button-primary" onclick="updateLike({{ comment.id }});" id="commentPostLike{{ comment.id }}"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;{{ comment.like }}</button>
+                                    <button class="pure-button pure-button-primary" data-toggle="modal" data-target="#myModalHorizontal{{ comment.id }}"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>&nbsp;回覆</button>
+                                    {% for hasReply in commentHasReply %}
+                                        {% if comment.id == hasReply.id %}
+                                            <a class="pull-right" id="foldBtn{{ comment.id }}"><i class="fa fa-chevron-right"></i></a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    <div class="fold{{ comment.id }}" style="display:none;">
+            				{% for reply in reply_list %}
+            				    {% if comment.id == reply.title_id %}
+                				    <div class="col-md-1"><label class="control-label pull-right">回覆</label></div>
+                				    <div class="col-md-11">
+                                        <div class="panel panel-white post">
+                                            <div class="post-heading">
+                                                <div class="pull-left image">
+                                                    <img src="{{ MEDIA_URL }}{{ reply.user.image }}" width="60" height="60" class="img-circle avatar" alt="">
+                                                </div>
+                                                <div class="pull-left meta">
+                                                    <div class="title h5">
+                                                        <a href="#"><b>{{ reply.user.name }}</b></a>
+                                                        made a reply.
+                                                    </div>
+                                                    <h6 class="text-muted time">{{ reply.add_time }}</h6>
+                                                </div>
+                                                <div class="pull-right meta">
+                                                    <span class="glyphicon glyphicon-star" aria-hidden="true" style="color:#gray;"></span>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="post-description"> 
+                                                <p>{{ reply.comment }}</p>
+                                                <button class="pure-button pure-button-primary" onclick="updateReplyLike({{ reply.id }});" id="replyPostLike{{ reply.id }}"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;{{ reply.like }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                			    {% endif %}
+                			{% endfor %}
+                	    </div>
+        	   </div><!--row-->
+            </div><!--container-fluid-->
+    		{% endfor %}
+    		<nav aria-label="Page navigation" class="putmiddle">
+              <ul class="pagination">
+                {% if comment_list.has_previous %}
+                    <li>
+                      <a href="?{{ comment_list.previous_page_number.querystring }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                {% endif %}
+                {% for page in comment_list.pages %}
+                    {% if page %}
+                        {% ifequal page comment_list.number %}
+                            <li><a class="is-active" href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                            <li><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li><a href="#">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if comment_list.has_next %}
+                    <li>
+                      <a href="?{{ comment_list.next_page_number.querystring }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                {% endif %}
+              </ul>
+            </nav>
+    </div><!--panel-body-->
+</div><!--panel-default-->
+{% endblock %}
+{% block js_source %}
+{% for comment in comment_list.object_list %}
+    <script type="text/javascript">
+        $(function(){
+        	$('#foldBtn{{ comment.id }}').click(function(){
+        		if($('.fold{{ comment.id }}').hasClass('o') == true){
+        			$(this).find('i.fa').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        			$('.fold{{ comment.id }}').removeClass('o').slideUp();
+        		}
+        		else{
+        			$(this).find('i.fa').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        			$('.fold{{ comment.id }}').addClass('o').slideDown();
+        		}
+        	});
+        	$('.close').click(function(){
+        		$('#foldBtn{{ comment.id }}').find('i.fa').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+        		$(this).parent().removeClass('o').slideUp();
+        	});
+        });
+    </script>
+{% endfor %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_W9eM0HpqDdKyL5du97LjTJEdvIR3VQU&callback=initialize"></script>
+<script type="text/javascript">
+    function initialize() {
+        var myLocation = document.getElementById("myLocation");
+        var location;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                console.log(position);
+                var geocoder = new google.maps.Geocoder();
+                // google.maps.LatLng 物件
+                var coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                // 傳入 latLng 資訊至 geocoder.geocode
+                geocoder.geocode({'latLng': coord }, function(results, status) {
+                  if (status === google.maps.GeocoderStatus.OK) {
+                    // 如果有資料就會回傳
+                    if (results) {
+                      location = results[0].address_components[3].short_name+results[0].address_components[1].short_name;
+                      myLocation.innerHTML = '<label class="control-label">－&nbsp;在<span name="commentLocation" style="color:#3399ff">'+location+'</span></label>';
+                      $.ajax({
+                        data: {
+                            commentlocation: location,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        url: '/operation/getLocation/',
+                        type: 'post'
+                      });
+                    }
+                    
+                  }
+                  // 經緯度資訊錯誤
+                  else {
+                    alert("Reverse Geocoding failed because: " + status);
+                  }
+                });
+            });
+        }
+    }
+</script>
+<script type="text/javascript">
+    function updateLike(commentID) {
+        $.ajax({
+            data: {
+                comment_id: commentID,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            url: '/operation/updateLike/',
+            type: 'post',
+            success : function(json) {
+                document.getElementById("commentPostLike"+commentID).innerHTML = '<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>&nbsp;'+json.cpl;
+            },
+    
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    }
+    
+    function updateReplyLike(replyID) {
+        $.ajax({
+            data: {
+                reply_id: replyID,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            url: '/operation/updateReplyLike/',
+            type: 'post',
+            success : function(json) {
+                document.getElementById("replyPostLike"+replyID).innerHTML = '<span class="glyphicon glyphicon-heart" aria-hidden="true"></span>&nbsp;'+json.rpl;
+            },
+    
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                    " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    }
+</script>
+<script src="{% static 'js/recorder.js' %}"></script>
+<script type="text/javascript">
+    
+    var sound;
+    var picture;
+    var video;
+    
+    document.getElementById('srBtn').onclick = function(){
+        if($('#srBtn').hasClass('o') == true){
+            $('#srBtn').removeClass('o');
+            $('#p').hide();
+            $('#s').hide();
+        }else{
+            $('#srBtn').addClass('o');
+            $('#p').show();
+            $('#s').show();
+        }
+    };
+    
+    document.getElementById('upload_link').onclick = function(e){
+        e.preventDefault();
+        $("#upload:hidden").trigger('click');
+    };
+
+    document.getElementById('upload_video').onclick = function(e){
+        e.preventDefault();
+        $("#upload2:hidden").trigger('click');
+    };
+    
+    
+
+    window.onload = function(){
+    
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+        var recorder;
+        var s = document.getElementById('s');
+        var p = document.getElementById('p');
+        var timer;
+        var context = new AudioContext();
+        
+        navigator.getUserMedia({audio: true}, function(stream) {
+            var microphone = context.createMediaStreamSource(stream);
+            var analyser = context.createAnalyser();
+            microphone.connect(analyser);
+            //analyser.connect(context.destination);
+            analyser.fftSize = 2048;
+            var bufferLength = analyser.frequencyBinCount;
+            var dataArray = new Uint8Array(analyser.fftSize);
+            analyser.getByteFrequencyData(dataArray);
+            
+            s.onclick = function(){
+                clearTimeout(timer);
+                p.disabled = false;
+                s.disabled = true;
+                recorder.stop();
+                createDownloadLink();
+                recorder.clear();
+            };
+            
+            p.onclick = function(){
+                recorder = new Recorder(microphone);
+                recorder.record();
+                p.disabled = true;
+                s.disabled = false;
+                update();
+            };
+            
+            
+            function update(){
+                analyser.getByteFrequencyData(dataArray);
+                timer = setTimeout(update,20);
+            }
+            
+            function createDownloadLink(){
+                recorder.exportWAV(function(blob) {
+                    var url = URL.createObjectURL(blob);
+                    var content = '<audio src="'+url+'" style="width:100%;max-width:300px;" controls></audio>';
+                    recordingslist.innerHTML = null;
+                    recordingslist.innerHTML = content;
+                    console.log(url);
+                    sound = blob;
+                });
+            }
+        
+        }, function(){
+            console.log('error');
+        });
+    };
+    
+    
+    function format_float(num, pos) {
+        var size = Math.pow(10, pos);
+        return Math.round(num * size) / size;
+    }
+    
+    
+    function preview(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#uploadimg').attr('src', e.target.result);
+            }
+            picture = input.files[0];
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function preview2(input) {
+    	if (input.files && input.files[0]) {
+	    var reader = new FileReader();
+	    reader.onload = function (e) {
+		$('#uploadvideo').attr('src', e.target.result);
+	    }
+	    video = input.files[0];
+	    reader.readAsDataURL(input.files[0]);
+	}
+    }
+    
+    
+    $('#upload').change(function (){
+        $('#preview').show();
+        preview(this);
+    });
+
+    $('#upload2').change(function (){
+	$('#preview2').show();
+	preview2(this);
+    });
+    
+    
+    
+    function submitComment(){
+        var formData = new FormData();
+        formData.append('commentDetail', document.getElementById('commentDetail').value);
+        formData.append('blob', sound);
+        formData.append('picture', picture);
+	formData.append('video', video);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        $.ajax({
+            data: formData,
+            url: '/operation/create_comment/?id={{ course.id }}',
+            type: 'post',
+            contentType: false,
+            processData: false,
+            success : function(json) {
+                console.log(json.message);
+                if(json.message == 'create comment success'){
+                    window.location = '/courses/comment/?id={{ course.id }}';
+                }
+            },
+        });
+    }
+    
+    
+    
+</script>
+{% endblock %}

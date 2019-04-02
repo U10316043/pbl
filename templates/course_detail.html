@@ -1,0 +1,94 @@
+{% extends 'course_base.html' %}
+{% load staticfiles %}
+{% block website_title %}{{ course.name }}-專題資訊{% endblock %}
+{% block css_source %}
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/pure-min.css" integrity="sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD" crossorigin="anonymous">
+{% endblock %}
+{% block content %}
+    {% if user.extraprofile.identify == 'teacher' %}
+            <div class="panel panel-default">
+        		<div class="panel-body">
+        		    <div class="col-md-2 col-xs-12 col-sm-12">
+        		        <img src="{{ MEDIA_URL }}{{ course.image }}" class="pull-left img-responsive thumb img-thumbnail">
+        		    </div>
+        		    <div class="col-md-10">
+        		        <form class="form-horizontal" role="form" enctype="multipart/form-data" action="{% url 'courses:course_update' %}?id={{ course.id }}" method="post">
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="courseName">專題名</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" name="courseName" id="courseName" placeholder="" value="{{ course.name }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="courseDesc">專題簡述</label>
+                                <div class="col-md-10">
+                                    <input type="text" class="form-control" name="courseDesc" id="courseDesc" placeholder="" value="{{ course.desc }}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="courseDetail">詳細資訊</label>
+                                <div class="col-md-10">
+                                    <textarea class="form-control" name="courseDetail" id="courseDetail" rows="3">{{ course.detail }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="filebutton">專題封面</label>
+                                <div class="col-md-10">
+                                    <input id="uploadFile" placeholder="Choose File" disabled="disabled" />
+                                    &nbsp;
+                                    <div class="fileUpload pure-button pure-button-primary">
+                                        <span>上傳檔案</span><input id="uploadBtn" name="image" type="file" class="hide_file" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                        		<div class="col-md-10"></div>
+                    			<div class="col-md-2">
+                    			    <div class="controls">
+                        				<button type="submit" class="pure-button">修改</button>
+                        			</div>
+                    			</div>
+                        	</div>
+                        {% csrf_token %}
+            		    </form>
+        		    </div>
+        		</div>
+        	</div>
+    {% else %}
+        <div class="panel panel-default">
+    		<div class="panel-heading">
+    		    專題資訊
+    		</div>
+    		<div class="panel-body">
+    		    <div class="col-md-2">
+    		        <img src="{{ MEDIA_URL }}{{ course.image }}" class="pull-left img-responsive thumb margin10 img-thumbnail">
+    		    </div>
+    		    <div class="col-md-10">
+    		        <form class="form-horizontal" role="form" enctype="multipart/form-data" action="" method="">
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="courseName">專題名</label>
+                            <div class="col-md-10">
+                                {{ course.name }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="courseDesc">專題簡述</label>
+                            <div class="col-md-10">
+                                {{ course.desc }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="courseDetail">詳細資訊</label>
+                            <div class="col-md-10">
+                                {{ course.detail }}
+                            </div>
+                        </div>
+        		    </form>
+    		    </div>
+    		</div>
+    	</div>
+    {% endif %}
+{% endblock %}
+{% block js_source %}
+    <script type="text/javascript" src="{% static 'js/upload_file.js' %}"></script>
+{% endblock %}

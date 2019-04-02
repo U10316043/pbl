@@ -1,0 +1,127 @@
+{% extends 'course_base.html' %}
+{% load staticfiles %}
+{% block website_title %}{{ course.name }}-資源下載{% endblock %}
+{% block css_source %}
+    <link rel="stylesheet" href="{% static 'css/page.css' %}" type="text/css" />
+{% endblock %}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+        {% if user.extraprofile.identify == 'teacher' %}
+            <div class="modal fade" id="myModalHorizontal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                <span class="glyphicon glyphicon-cloud-download"></span>&nbsp;新增檔案
+                            </h4>
+                        </div>
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" enctype="multipart/form-data" action="{% url 'courses:resource_upload' %}?id={{ course.id }}" method="post">
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="newFileName"><span class="glyphicon glyphicon-tag" aria-hidden="true" style="color:red"></span>&nbsp;名稱</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" name="newFileName" id="newFileName" placeholder=""/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="newFileDesc"><span class="glyphicon glyphicon-align-left" aria-hidden="true" style="color:#33CCFF"></span>&nbsp;簡述</label>
+                                    <div class="col-md-10">
+                                        <input type="text" class="form-control" name="newFileDesc" id="newFileDesc" placeholder=""/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="filebutton"><span class="glyphicon glyphicon-file" aria-hidden="true" style="color:gray"></span>&nbsp;檔案</label>
+                                    <div class="col-md-10">
+                                        <input id="uploadFile" placeholder="Choose File" disabled="disabled" />
+                                        <div class="fileUpload pure-button pure-button-primary">
+                                            <span>上傳檔案</span><input id="uploadBtn" name="download" type="file" class="hide_file" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Modal Footer -->
+                                <div class="modal-footer">
+                                    <button type="button" class="pure-button" data-dismiss="modal">
+                                        返回
+                                    </button>
+                                    <button type="submit" class="pure-button pure-button-primary">
+                                        新增
+                                    </button>
+                                </div>
+                            {% csrf_token %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="pure-button pure-button-primary" data-toggle="modal" data-target="#myModalHorizontal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;新增檔案</button>
+        {% endif %}
+        <div class="container-fluid" style="padding: 10px;">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>標題</th>
+                        <th>內容</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in file_list.object_list %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ file.name }}</td>
+                            <td>{{ file.detail }}</td>
+                            <td>
+                                <a href="{{ MEDIA_URL }}{{ file.download }}" class="flag" target="_blank"><span class="glyphicon glyphicon-download"></span></a>
+                                {% if user.extraprofile.identify == 'teacher' %}
+                                    <a href="{% url 'courses:resource_delete' %}?resource_id={{ file.id }}" class="flag" onclick="return confirm('確認刪除?');"><span class="glyphicon glyphicon-remove-circle"></span></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <h6>總數&nbsp;<span class="label label-info">{{ file_num }}</span></h6>
+            <nav aria-label="Page navigation" class="putmiddle">
+              <ul class="pagination">
+                {% if file_list.has_previous %}
+                    <li>
+                      <a href="?{{ file_list.previous_page_number.querystring }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                      </a>
+                    </li>
+                {% endif %}
+                {% for page in file_list.pages %}
+                    {% if page %}
+                        {% ifequal page file_list.number %}
+                            <li><a class="is-active" href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% else %}
+                            <li><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                        {% endifequal %}
+                    {% else %}
+                        <li><a href="#">...</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if file_list.has_next %}
+                    <li>
+                      <a href="?{{ file_list.next_page_number.querystring }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>
+                {% endif %}
+              </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js_source %}
+    <script type="text/javascript" src="{% static 'js/upload_file.js' %}"></script>
+{% endblock %}

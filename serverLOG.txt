@@ -1,0 +1,45 @@
+ * Running on https://0.0.0.0:8080/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 837-683-216
+/usr/lib64/python2.7/importlib/__init__.py:37: RemovedInDjango110Warning: django.core.context_processors is deprecated in favor of django.template.context_processors.
+  __import__(name)
+
+49.217.65.171 - - [08/Aug/2017 17:19:12] "GET / HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:13] "GET /static/js/logout.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:13] "GET /static/css/message.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:13] "GET /static/css/animate.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:13] "GET /static/css/basestyle.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:13] "GET /static/js/jquery-3.1.1.min.js HTTP/1.1" 200 -
+Not Found: /favicon.ico
+49.217.65.171 - - [08/Aug/2017 17:19:15] "GET /favicon.ico HTTP/1.1" 404 -
+49.217.65.171 - - [08/Aug/2017 17:19:50] "GET /users/login/ HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:51] "GET /static/css/login.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:19:51] "GET /static/js/login_post.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:01] "POST /users/login/ HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:03] "GET / HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:05] "GET /courses/mycourse/ HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:05] "GET /static/css/page.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:06] "GET /static/css/profile_basestyle.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:06] "GET /static/css/dialog.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:06] "GET /media/img/user/default_user.png HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:06] "GET /media/img/course/default_course.jpg HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:06] "GET /static/js/upload_file.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:11] "GET /courses/detail/?id=1 HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:11] "GET /static/js/course_base.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:11] "GET /static/css/course_basestyle.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:13] "GET /courses/comment/?id=1 HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:13] "GET /static/css/course_comment.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:13] "GET /static/css/comment_box.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:13] "GET /static/js/recorder.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:15] "GET /courses/project/?id=1 HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:15] "GET /static/js/bootstrap-datetimepicker.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:15] "GET /static/js/bootstrap-datetimepicker.zh-TW.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:15] "GET /static/css/bootstrap-datetimepicker.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:20:17] "GET /courses/comment/?id=1 HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:26:33] "GET / HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:26:33] "GET /static/css/animate.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:26:33] "GET /static/css/basestyle.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:26:33] "GET /static/js/jquery-3.1.1.min.js HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:26:33] "GET /static/css/message.css HTTP/1.1" 200 -
+49.217.65.171 - - [08/Aug/2017 17:26:33] "GET /static/js/logout.js HTTP/1.1" 200 -

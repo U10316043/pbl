@@ -1,0 +1,38 @@
+
+.putmiddle{
+  width: 100%;
+  position: relative;
+  text-align: center;
+}
+
+.pagination{
+  padding: 30px 0;
+}
+
+.pagination ul{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.pagination a{
+  display: inline-block;
+  padding: 10px 18px;
+  color: #222;
+}
+
+/* ONE */
+
+.p1 a{
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  padding: 0;
+  text-align: center;
+}
+
+.p1 a.is-active{
+  background-color: #2d92cc;
+  border-radius: 100%;
+  color: #fff;
+}

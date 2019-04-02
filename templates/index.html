@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block website_title %}Project Based Learning{% endblock %}
+{% block content %}
+    {% if request.user.is_authenticated %}
+        <div class="container-fluid" style="max-width:800px;">
+            {% if myHomework and request.user.extraprofile.identify == 'student' %}
+                <h4>作業通知</h4>
+            {% endif %}
+            {% for homework in myHomework %}
+                <a href="{% url 'courses:homework_detail' %}?id={{ homework.course_id }}&h_id={{ homework.id }}" style="text-decoration:none;">
+                    {% if homework.deadline_token == '1' %}
+                        <div class="panel panel-danger">
+                    {% else %}
+                        <div class="panel panel-info">
+                    {% endif %}
+                            <div class="panel-body">
+                                <p>作業 : {{ homework.name }}</p>
+                                <p>繳交時間 : <span {% if homework.deadline_token == '1' %}style="color:red;"{% endif %}>{{ homework.limit_time }}</span></p>
+                            </div>
+                        </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="container-fluid">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    請先登入
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

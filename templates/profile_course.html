@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block website_title %}個人資料{% endblock %}
+{% block css_source %}
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/pure-min.css" integrity="sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/profile_basestyle.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/page.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'css/dialog.css' %}" type="text/css" />
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                {% include 'profile_base.html' %}
+            </div>
+            <div class="col-md-9">
+    	        <div class="profile profile-content">
+    	            
+    	            {% if user.extraprofile.identify == 'teacher' %}
+    	                <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-10"></div>
+                                <div class="col-md-2">
+                                    <button class="pure-button pure-button-primary" data-toggle="modal" data-target="#myModalHorizontal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;新增專題</button>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="myModalHorizontal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span aria-hidden="true">&times;</span>
+                                                <span class="sr-only">Close</span>
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel">
+                                                新增專題
+                                            </h4>
+                                        </div>
+                                        <!-- Modal Body -->
+                                        <div class="modal-body">
+                                            <form class="form-horizontal" role="form" enctype="multipart/form-data" action="{% url 'courses:create' %}" method="post">
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label" for="newCourseName">專題名</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="newCourseName" id="newCourseName" placeholder=""/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label" for="newCourseDesc" >專題簡述</label>
+                                                    <div class="col-md-10">
+                                                        <input type="text" class="form-control" name="newCourseDesc" id="newCourseDesc" placeholder=""/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label" for="newCourseDetail" >詳細資訊</label>
+                                                    <div class="col-md-10">
+                                                        <textarea class="form-control" name="newCourseDetail" id="newCourseDetail" rows="3"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-2 control-label" for="filebutton">專題封面</label>
+                                                    <div class="col-md-10">
+                                                        <input id="uploadFile" placeholder="Choose File" disabled="disabled" />
+                                                        <div class="fileUpload pure-button pure-button-primary">
+                                                            <span>上傳檔案</span><input id="uploadBtn" name="image" type="file" class="hide_file" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Modal Footer -->
+                                                <div class="modal-footer">
+                                                    <button type="button" class="pure-button" data-dismiss="modal">
+                                                        返回
+                                                    </button>
+                                                    <button type="submit" class="pure-button pure-button-primary">
+                                                        新增
+                                                    </button>
+                                                </div>
+                                            {% csrf_token %}
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+        	            <br>
+    	                {% for courses in course_list.object_list %}
+            	            <div class="panel panel-default">
+            	                <div class="panel-body">
+            	                    <div class="col-md-12">
+            	                        <h3>{{ courses.name }}<h5>(專題ID:{{courses.id}})</h5></h3>
+                        	                <img width="30%" height="30%" style="margin-right:10px;" src="{{ MEDIA_URL }}{{ courses.image }}" alt="" class="pull-left img-responsive thumb img-thumbnail">
+                        	                <article><p>
+                        	                    {{ courses.desc }}
+                                            </p></article>
+                                            <a class="btn btn-info pull-right" href="{% url 'courses:detail' %}?id={{ courses.id }}">進入專題&nbsp;<span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+                                    </div>
+            	                </div>
+            	            </div>
+        	            {% endfor %}
+    	            {% elif user.extraprofile.identify == 'student' %}
+        	            {% for courses in course_list.object_list %}
+            	            <div class="panel panel-default">
+            	                <div class="panel-body">
+            	                    <div class="col-md-12">
+            	                        <h3>{{ courses.course.name }}<h5>(專題ID:{{courses.course.id}})</h5></h3>
+                        	                <img width="20%" height="20%" src="{{ MEDIA_URL }}{{ courses.course.image }}" alt="" class="pull-left img-responsive thumb margin10 img-thumbnail">
+                        	                <article><p>
+                        	                    {{ courses.course.desc }}
+                                            </p></article>
+                                            <a class="btn btn-info pull-right" href="{% url 'courses:detail' %}?id={{ courses.course.id }}">進入專題&nbsp;<span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+        
+                                    </div>
+            	                </div>
+            	            </div>
+        	            {% endfor %}
+    	            {% endif %}
+    	            
+    	            <div class="putmiddle">
+        	            <div class="pagination p1">
+        	                <ul>
+        	                    {% if course_list.has_previous %}
+        	                        <a href="?{{ course_list.previous_page_number.querystring }}"><li><</li></a>
+                                {% endif %}
+                                {% for page in course_list.pages %}
+                                    {% if page %}
+                                        {% ifequal page course_list.number %}
+                                            <a class="is-active" href="?{{ page.querystring }}"><li>{{ page }}</li></a>
+                                        {% else %}
+                                            <a href="?{{ page.querystring }}"><li>{{ page }}</li></a>
+                                        {% endifequal %}
+                                    {% else %}
+                                        <a href="#"><li>...</li></a>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if course_list.has_next %}
+                                    <a href="?{{ course_list.next_page_number.querystring }}"><li>></li></a>
+                                {% endif %}
+                          </ul>
+                        </div>
+                    </div>
+    	        </div>
+		    </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js_source %}
+    <script type="text/javascript" src="{% static 'js/upload_file.js' %}"></script>
+{% endblock %}

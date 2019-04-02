@@ -1,0 +1,46 @@
+{% load staticfiles %}
+<div class="profile">
+	<div class="profile-sidebar">
+		<!-- SIDEBAR USERPIC -->
+		<div class="profile-userpic">
+			<img src="{{ MEDIA_URL }}{{ user.extraprofile.image }}" class="img-responsive" alt="">
+		</div>
+		<!-- END SIDEBAR USERPIC -->
+		<!-- SIDEBAR USER TITLE -->
+		<div class="profile-usertitle">
+			<div class="profile-usertitle-name">
+			    {{ user.extraprofile.name }}&nbsp;&nbsp;&nbsp;(ID:{{ user.id }})
+			</div>
+			<div class="profile-usertitle-job">
+				身份:
+				{% if user.is_superuser %}管理員.{% endif %}
+				{% if user.extraprofile.identify == 'teacher' %}
+					老師
+				{% elif user.extraprofile.identify == 'student' %}
+					學生
+				{% endif %}
+			</div>
+		</div>
+		<!-- END SIDEBAR USER TITLE -->
+
+		<!-- SIDEBAR MENU -->
+		<div class="profile-usermenu">
+			<ul class="nav">
+				<li class="{% if request.path == '/users/profile/' %}active{% endif %}">
+					<a href="{% url 'users:profile' %}"><i class="glyphicon glyphicon-user"></i>個人資料</a>
+				</li>
+				<li class="{% ifequal request.path '/courses/mycourse/' %}active{% endifequal %}">
+					{% if user.extraprofile.identify == 'teacher' %}
+	    				<a href="{% url 'courses:mycourse' %}"><i class="glyphicon glyphicon-th-list"></i>專題管理</a>
+					{% elif user.extraprofile.identify == 'student' %}
+	    				<a href="{% url 'courses:mycourse' %}"><i class="glyphicon glyphicon-book"></i>我的專題</a>
+					{% endif %}
+				</li>
+				<li class="{% ifequal request.path '/users/help/' %}active{% endifequal %}">
+					<a href="{% url 'users:help' %}"><i class="glyphicon glyphicon-flag"></i>幫助</a>
+				</li>
+			</ul>
+		</div>
+		<!-- END MENU -->
+	</div>
+</div>

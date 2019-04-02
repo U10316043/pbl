@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block website_title %}個人資料{% endblock %}
+{% block css_source %}
+    <link rel="stylesheet" href="{% static 'css/profile_basestyle.css' %}" type="text/css" />
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                {% include 'profile_base.html' %}
+            </div>
+            <div class="col-md-9">
+    	        <div class="profile profile-content">
+    	            ...
+    	        </div>
+		    </div>
+        </div>
+    </div>
+{% endblock %}
